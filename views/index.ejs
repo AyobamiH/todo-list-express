@@ -23,13 +23,16 @@
     <% for(let i=0; i < items.length; i++) {%>
         <li class="item">
             <% if(items[i].completed === true) {%>
-                <span class='completed'><%= items[i].thing %></span>
+
+                <button value="25" name="session"><%= item %> </button>
             <% }else{ %>
-                <span><%= items[i].thing %></span>
+                <span><%= items[i].thing %>  </span>
             <% } %>    
             <span class='fa fa-trash'></span>
         </li>
     <% } %>
+
+    <button value="25" name="session">START SESSION</button>
     </ul>
 
     <h2>Left to do: <%= left %></h2>
@@ -38,8 +41,10 @@
 
     <form action="/addTodo" method="POST">
         <input type="text" placeholder="Thing To Do" name="todoItem">
+       
         <input type="submit">
     </form>
+    
     
 
     <script src='js/main.js'></script>

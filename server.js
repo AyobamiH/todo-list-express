@@ -1,26 +1,30 @@
+//
 const express = require('express')
 const app = express()
 const MongoClient = require('mongodb').MongoClient
 const PORT = 2121
 require('dotenv').config()
 
-
+// Variables
 let db,
     dbConnectionStr = process.env.DB_STRING,
     dbName = 'todo'
 
+// Making a connection to MongoDB 
 MongoClient.connect(dbConnectionStr, { useUnifiedTopology: true })
     .then(client => {
         console.log(`Connected to ${dbName} Database`)
         db = client.db(dbName)
     })
-    
+
+// Setting apps view engine to ejs    
 app.set('view engine', 'ejs')
+
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
-
+//Get method route
 app.get('/',async (request, response)=>{
     const todoItems = await db.collection('todos').find().toArray()
     const itemsLeft = await db.collection('todos').countDocuments({completed: false})
@@ -35,6 +39,7 @@ app.get('/',async (request, response)=>{
     // .catch(error => console.error(error))
 })
 
+// Post method route
 app.post('/addTodo', (request, response) => {
     db.collection('todos').insertOne({thing: request.body.todoItem, completed: false})
     .then(result => {
@@ -44,6 +49,7 @@ app.post('/addTodo', (request, response) => {
     .catch(error => console.error(error))
 })
 
+//Put method route
 app.put('/markComplete', (request, response) => {
     db.collection('todos').updateOne({thing: request.body.itemFromJS},{
         $set: {
@@ -61,6 +67,7 @@ app.put('/markComplete', (request, response) => {
 
 })
 
+//Put method route
 app.put('/markUnComplete', (request, response) => {
     db.collection('todos').updateOne({thing: request.body.itemFromJS},{
         $set: {
@@ -78,6 +85,8 @@ app.put('/markUnComplete', (request, response) => {
 
 })
 
+// Delete method route
+
 app.delete('/deleteItem', (request, response) => {
     db.collection('todos').deleteOne({thing: request.body.itemFromJS})
     .then(result => {
@@ -87,6 +96,8 @@ app.delete('/deleteItem', (request, response) => {
     .catch(error => console.error(error))
 
 })
+
+// Listening to server
 
 app.listen(process.env.PORT || PORT, ()=>{
     console.log(`Server running on port ${PORT}`)
